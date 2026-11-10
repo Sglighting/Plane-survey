@@ -10,7 +10,41 @@
 *{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.4 "Trebuchet MS","Segoe UI",Roboto,sans-serif}
 #app{max-width:560px;margin:0 auto;padding:10px}
-@media (min-width:900px){body{font-size:19px}#app{max-width:none;padding:20px 28px}canvas{width:100%}.ib{max-height:360px;grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}}
+@media (min-width:900px){
+html,body{height:100%;overflow:hidden}
+body{font-size:14px;line-height:1.4}
+button,input,select,textarea{font-size:14px}button{cursor:pointer}
+input,select,textarea{padding:7px 9px;border-width:1px;border-radius:6px}
+.btn{padding:7px 14px;border-radius:6px;border-width:1px}
+.card{border-radius:8px;padding:12px}
+h1{font-size:30px}h2{font-size:16px;margin:10px 0 4px}
+label{font-size:13px}
+#app{max-width:none;height:100vh;overflow:auto;padding:0 20px 16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(440px,1fr));gap:0 16px;align-content:start}
+#app>.top,#app>.hd,#app>h2,#app>.mut,#app>p,#app>button.p{grid-column:1/-1}
+#app>.top{padding:10px 0;margin:0;border-bottom:1px solid var(--line);margin-bottom:8px}
+#app>button.p{justify-self:start;width:auto!important;min-width:240px}
+#app:has(>.big){grid-template-columns:repeat(3,1fr);gap:16px;align-content:center;max-width:1200px;margin:0 auto;width:100%}
+#app>.hd{margin:0}
+.big{margin:0;padding:34px 24px;font-size:20px}
+#app:has(>.tabs){display:flex;flex-direction:column;overflow:hidden}
+.tabs.stk{position:static;display:flex;gap:4px;margin:0;padding:6px 0;border-bottom:1px solid var(--line)}
+.tabs button{flex:0 0 150px;padding:8px 0;font-size:14px;border-width:1px;border-radius:6px}
+#body{flex:1;min-height:0;overflow:auto;padding:12px 0}
+#body.t-info>.card{max-width:640px}
+#body.t-check,#body.t-foto{column-width:460px;column-gap:20px;display:block}
+#body.t-check>*,#body.t-foto>*{break-inside:avoid}
+#body.t-check>.chips{column-span:all}
+.chips{flex-wrap:wrap;overflow:visible}.chips button{font-size:13px;padding:6px 12px;border-width:1px}
+.dd>summary{font-size:15px;padding:10px 0}
+#body.t-plan{overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr) 340px;grid-template-rows:auto minmax(0,1fr);gap:0 16px;padding:8px 0 0}
+#body.t-plan>.row{grid-column:1;grid-row:1}
+#cw{grid-column:1;grid-row:2;display:flex;justify-content:center;align-items:center;min-height:0;background:#11151c;border:1px solid var(--line);border-radius:8px}
+#cw canvas{height:100%;width:auto;max-width:100%;aspect-ratio:3/4;border:0;border-radius:0}
+#side{grid-column:2;grid-row:1/3;overflow-y:auto;min-height:0}
+.rail{top:10px;left:auto}.rail.l{left:10px}.rail.r{right:10px;display:grid;grid-template-columns:repeat(2,38px)}
+.rail.r button.hd{grid-column:1/-1}
+.rail button{width:38px;height:38px}.rail button svg{width:21px;height:21px}
+}
 h1{font:800 28px/1.1 "Arial Black",Impact,sans-serif;margin:0 0 4px}.hd{display:flex;align-items:center;gap:14px;margin:6px 0 10px}.lg{width:84px;height:84px;border-radius:50%;flex:0 0 auto;box-shadow:0 2px 10px rgba(0,0,0,.3)}
 h2{font-size:18px;margin:12px 0 6px}
 .big{display:block;width:100%;padding:26px 18px;margin:12px 0;border:0;border-radius:18px;font:700 20px inherit;font-family:inherit;text-align:left;color:#fff;background:var(--acc);}
@@ -155,12 +189,12 @@ function pointer(){const cv=$('#cv');let g=null,pin=null;const P={};
 // ---- editor ----
 function edit(){const s=S.cur;
  A.innerHTML=`<div class="top"><button class="btn" onclick="go('home')">←</button><b>${esc(s.name||'Senza nome')}</b><span class="ok" id="sv">Salvato ✓</span></div>
-<div class="tabs stk">${[['info','Location'],['check','Check'],['plan','Pianta'],['foto','Foto']].map(t=>`<button class="${S.tab==t[0]?'on':''}" onclick="S.tab='${t[0]}';render()">${t[1]}</button>`).join('')}</div><div id="body"></div>`;
+<div class="tabs stk">${[['info','Location'],['check','Check'],['plan','Pianta'],['foto','Foto']].map(t=>`<button class="${S.tab==t[0]?'on':''}" onclick="S.tab='${t[0]}';render()">${t[1]}</button>`).join('')}</div><div id="body" class="t-${S.tab}"></div>`;
  const b=$('#body');
  if(S.tab=='info')b.innerHTML=`<div class="card">${fields()}</div>`;
  else if(S.tab=='check')b.innerHTML=ckBody();
  else if(S.tab=='foto')b.innerHTML=fotoBody();
- else{b.innerHTML=`<div class="row" style="align-items:center;margin-bottom:4px"><div class="mut" id="hint" style="flex:1"></div><button class="btn" id="rtg" onclick="S.cl=S.cr=!(S.cl&&S.cr);tools()" style="flex:0 0 auto;padding:6px 10px;font-size:13px"></button></div><div id="cw"><canvas id="cv" width="600" height="800"></canvas><div class="rail l" id="tl"></div><div class="rail r" id="ib"></div></div><div id="pn"></div><details class="card"><summary><b>Pianta di sfondo (immagine o PDF)</b></summary><div id="bgp">${bgHtml()}</div></details><details class="card"><summary><b>Scala e pareti misurate</b></summary><div id="gm"></div></details>`;tools();pointer();redraw();panel()}}
+ else{b.innerHTML=`<div class="row" style="align-items:center;margin-bottom:4px"><div class="mut" id="hint" style="flex:1"></div><button class="btn" id="rtg" onclick="S.cl=S.cr=!(S.cl&&S.cr);tools()" style="flex:0 0 auto;padding:6px 10px;font-size:13px"></button></div><div id="cw"><canvas id="cv" width="600" height="800"></canvas><div class="rail l" id="tl"></div><div class="rail r" id="ib"></div></div><div id="side"><div id="pn"></div><details class="card"><summary><b>Pianta di sfondo (immagine o PDF)</b></summary><div id="bgp">${bgHtml()}</div></details><details class="card"><summary><b>Scala e pareti misurate</b></summary><div id="gm"></div></details></div>`;tools();pointer();redraw();panel()}}
 function fotoBody(){const s=S.cur;(s.prese||[]).forEach(e=>CKL[e.id]='Presa: '+(e.zona||'senza nome'));Object.values(s.zon||{}).flat().forEach(z=>CKL[z.id]='Zona: '+(z.name||'senza nome'));return`<div class="row st"><label class="btn p" style="margin:0;text-align:center;padding:12px 0">📷 Scatta<input type="file" accept="image/*" class="fi" onchange="addPhoto(this.files[0])"></label><label class="btn" style="margin:0;text-align:center;padding:12px 0">🖼 Dal telefono<input type="file" accept="image/*" class="fi" onchange="addPhoto(this.files[0])"></label></div><div class="card" style="margin:8px 0"><b>Carica foto</b><div class="mut">Scegli una o più foto dal telefono. Dal PC puoi anche trascinarle qui o incollarle (Ctrl+V).</div><input type="file" accept="image/*" multiple style="margin-top:6px" onchange="[...this.files].forEach(f=>addPhoto(f))"></div>`+(s.photos.map(p=>{const u=[...s.plan.icons.filter(i=>i.photo==p.id).map(i=>T(i.type)[1]),...Object.keys(s.check||{}).filter(k=>CKL[k]&&((s.check[k].ph||[]).includes(p.id)||p.chk==k)).map(k=>CKL[k])];
  return`<div class="card"><img class="ph" src="${p.data}"><div class="mut">${u.length?'Usata in: '+esc(u.join(', ')):'Non ancora usata'}</div><input placeholder="Didascalia" value="${esc(p.cap)}" oninput="photoCap('${p.id}',this.value)"><button class="btn d" style="margin-top:6px" onclick="photoDel('${p.id}')">Elimina dalla libreria</button></div>`}).join('')||'<p class="mut">Libreria vuota. Le foto scattate qui o nel Check restano qui e si possono riusare.</p>')}
 const TL=[['wall','▬','Parete'],['door','🚪','Porta'],['stage','▭','Palco'],['pen','✏️','Matita'],['erase','🧽','Gomma'],['move','✋','Sposta / modifica'],['pan','✥','Muovi vista'],['!zin','＋','Zoom avanti'],['!zout','－','Zoom indietro'],['!zreset','⤢','Vista intera'],['!undo','↩️','Annulla'],['!clear','🗑️','Cancella tutto']],HT={wall:'trascina per tracciare',door:'tocca dove va',stage:'trascina per disegnare',pen:'disegna a mano libera',erase:'passa sui tratti da togliere',move:'trascina; tocca una parete per misure e rotazione',pan:'trascina la vista (o pinch a due dita)'};
